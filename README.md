@@ -54,7 +54,7 @@ Both are third-party and neither is included here.
    Put its `d3d9.dll` in the game folder. Mercenaries 2's stock D3D9 path renders Lake
    Maracaibo incorrectly on modern NVIDIA drivers - the lake bed is dry and the walls are
    vertical. That is a driver-era bug in the game's own shader path, not a settings
-   problem; DXVK 3.1.1 x86 renders it correctly. Water is closed: do not chase it further.
+   problem; DXVK 3.1.1 x86 renders it correctly.
 
 
 ## Install
