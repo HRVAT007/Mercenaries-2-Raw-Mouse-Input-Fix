@@ -1,0 +1,79 @@
+x4 SHADOW SHADERS - HOW TO INSTALL
+==================================
+
+Read this first: the shadow map has TWO halves, and they have to agree.
+
+  1. the atlas the game allocates   ->  Mercs2Fix.ini   [Shadow] MapSizeScale=4
+  2. the PCF filter that reads it   ->  data\shader3.bin  (the file in this folder)
+
+Changing only one half is worse than changing neither: the filter samples the
+wrong grid and the shadows go blocky or stair-stepped. Mercs2Fix.log names
+which half disagrees, so you never have to guess.
+
+
+INSTALL - two minutes, game must be CLOSED
+------------------------------------------
+
+  1. Close the game.
+
+  2. Go to your Mercenaries 2 folder and open  data\
+
+  3. Copy  data\shader3.bin  to  data\shader3.bin.orig
+     That is your undo button.
+
+  4. Copy  shader\shader3.x4.bin  (from this archive) to
+         <game folder>\data\shader3.bin
+     Same name, it replaces the original. Do NOT rename it to shader3.x4.bin
+     inside data\ - the game only ever loads the file named shader3.bin.
+
+  5. Check Mercs2Fix.ini says:
+         [Shadow]
+         MapSizeScale=4
+
+  6. Start the game, then open Mercs2Fix.log in the game folder. These are the
+     two lines that mean it worked:
+
+         ShadowShader: 315 hits of the x4 atlas constant 00 00 00 39 ...
+         ShadowScale: x4 on 15/15 immediates - atlas 1024x4096 -> 4096x16384,
+                      cascade 4096x4096, and data\shader3.bin was confirmed to
+                      carry the matching (0.5/W, 0.5/H, W, H) constant ...
+
+     Anything else, and the log says so on one line:
+       "data\shader3.bin is baked at x1 while [Shadow] MapSizeScale=4"
+       -> step 4 did not take. Check the file really went into data\ and that
+          it is named shader3.bin.
+       "ShadowScale: x1" / no ShadowScale line at all
+       -> Mercs2Fix.asi is not loading. See README.md.
+
+
+UNDO
+----
+Delete  data\shader3.bin  and rename  data\shader3.bin.orig  back to
+shader3.bin. Then set [Shadow] MapSizeScale=1 in Mercs2Fix.ini.
+
+
+THE ALTERNATIVE: DO THE SAME THING WITH THE TOOL
+------------------------------------------------
+Instead of copying the file over, edit your own install in place:
+
+    python tools\shadow_res.py probe      what your file is right now
+    python tools\shadow_res.py set 4      apply x4 (keeps its own backup)
+    python tools\shadow_res.py restore    back to the shipped file
+    python tools\shadow_res.py verify     confirm what is on disk now
+
+The tool's backup is named  data\shader3.bin.mercs2orig  - it will not
+overwrite the .orig you made in step 3. If your game is not installed where the
+tool expects, point it at the file first:
+
+    set MERCS2_SHADER=D:\Games\Mercenaries 2\data\shader3.bin
+
+Same requirement: run it with the game closed.
+
+
+WHAT THIS DOES NOT TOUCH
+------------------------
+Nothing outside  data\shader3.bin. In particular  data\shader3Low.bin  is left
+alone - that is the low shader set, and the game only loads it when
+[Render] ShaderLevel=0. The edit replaces float constants in place, so no blob
+offset, blob size or hash key moves and the game still finds every shader it
+asks for. No save format, no game code, no copy protection is involved.

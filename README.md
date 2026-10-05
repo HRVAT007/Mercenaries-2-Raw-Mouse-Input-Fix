@@ -54,7 +54,7 @@ Both are third-party and neither is included here.
    Put its `d3d9.dll` in the game folder. Mercenaries 2's stock D3D9 path renders Lake
    Maracaibo incorrectly on modern NVIDIA drivers - the lake bed is dry and the walls are
    vertical. That is a driver-era bug in the game's own shader path, not a settings
-   problem; DXVK 3.1.1 x86 renders it correctly. Water is closed: do not chase it further.
+   problem; DXVK 3.1.1 x86 renders it correctly.
 
 
 ## Install
@@ -64,37 +64,49 @@ Both are third-party and neither is included here.
   Mercenaries2.exe
   dinput8.dll          <- Ultimate ASI Loader (x86)
   d3d9.dll             <- DXVK (x86), for correct water
-  Mercs2Fix.asi        <- build it, see below
+  Mercs2Fix.asi        <- from the release archive, or build it
   Mercs2Fix.ini        <- the config, edit or use the Insert panel
-  data\shader3.bin     <- optional, see "Shadow resolution"
+  data\shader3.bin     <- optional, x4 shadows: see shader\INSTALL.txt
 ```
 
-1. Build `Mercs2Fix.asi` (below) and put it in the game folder.
+1. Copy `Mercs2Fix.asi` into the game folder. It is in the release archive; build it
+   yourself with `build.bat` if you prefer.
 2. Put `Mercs2Fix.ini` beside it.
 3. Install the ASI loader as `dinput8.dll`.
-4. Start the game. Open `Mercs2Fix.log` in the same folder if anything looks off - the
+4. For x4 shadows, follow `shader\INSTALL.txt` (game closed, two file copies). Skip it and
+   you keep stock shadow resolution; nothing else in the mod needs it.
+5. Start the game. Open `Mercs2Fix.log` in the same folder if anything looks off - the
    first lines say which version loaded and which patches were applied or skipped.
 
 
 ## Shadow resolution
 
-The shadow atlas size is decided by literal constants in `Mercenaries2.exe`, and the PCF
-filter that reads that atlas is compiled into `data\shader3.bin` with the texel size baked
-in. **Both halves have to move together**, or the filter samples the wrong grid.
+The shadow map has two halves and **they have to agree**:
 
-- `Mercs2Fix.asi` scales the exe half, from `[Shadow] MapSizeScale`.
-- The shader half is either the shipped file or the tool:
-  - `shader\shader3.x4.bin` is a ready x4 shader library. Back up
-    `data\shader3.bin` and copy it over the original.
-  - if your game is not installed where the tool expects, point it at the file with the
-    `MERCS2_SHADER` environment variable.
-  - or do the same yourself with `python tools\shadow_res.py set 4` (also `verify` and
-    `restore`; it keeps its own `data\shader3.bin.mercs2orig` backup). It edits only the
-    baked float constants, so every blob offset, size and hash stays valid, and it needs
-    the game closed.
+| half | what it is | how you change it |
+| --- | --- | --- |
+| the atlas the game allocates | literal constants in `Mercenaries2.exe` | `Mercs2Fix.asi`, from `[Shadow] MapSizeScale` |
+| the PCF filter that reads it | texel size baked into `data\shader3.bin` | the file below, or `tools\shadow_res.py` |
 
-The shipped `Mercs2Fix.ini` assumes x4 on both halves. If they disagree the log says so in
-one line and leaves the atlas at the shader's value.
+Move one without the other and the filter samples the wrong grid - blocky or
+stair-stepped shadows, worse than stock. `Mercs2Fix.log` names which half disagrees.
+
+**To install the x4 shaders, follow `shader\INSTALL.txt`** - it is the whole procedure, with
+the two log lines that confirm success and the undo. Short version, game closed:
+
+1. Copy `data\shader3.bin` to `data\shader3.bin.orig`.
+2. Copy `shader\shader3.x4.bin` to `data\shader3.bin` - **keep the name `shader3.bin`**.
+3. Leave `[Shadow] MapSizeScale=4` in `Mercs2Fix.ini` (it is the shipped value).
+4. Start the game and look for `ShadowScale: x4 on 15/15 immediates` in `Mercs2Fix.log`.
+
+Prefer to edit your own file instead of replacing it? `python tools\shadow_res.py set 4`
+does exactly that, in place, and keeps its own backup (`probe`, `verify` and `restore` are
+its other commands). It only rewrites the baked float constants, so every blob offset, size
+and hash key stays valid. If your game is not installed where the tool expects, point it at
+the file with the `MERCS2_SHADER` environment variable.
+
+The shipped `Mercs2Fix.ini` assumes x4 on both halves, so the ini and the shader file are a
+matched pair - change one, change the other.
 
 
 ## Known issue: raising draw distance
@@ -137,6 +149,7 @@ docs\Mercs2Fix.annotated.ini   every key, plus the RE notes behind each patch
 docs\re-camera-recenter-asi.md the car-camera analysis
 tools\shadow_res.py            the shader-half tool
 shader\shader3.x4.bin          pre-baked x4 shadow shaders
+shader\INSTALL.txt             how to install them, and how to undo it
 ```
 
 
