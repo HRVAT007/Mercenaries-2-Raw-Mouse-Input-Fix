@@ -1,2 +1,6 @@
 # Auto detect text files and perform LF normalization
 * text=auto
+
+# Never text-convert a binary asset.
+*.bin binary
+*.asi binary

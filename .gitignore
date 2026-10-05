@@ -1,0 +1,15 @@
+# Build output - the release carries source, not the compiled plugin.
+build/
+*.obj
+*.asi
+*.exp
+
+# Runtime debris.
+*.log
+*.bak*
+*.mercs2orig
+tmp/
+
+# The reverse-engineering toolbox stays on the author's disk; only the shipped tool is tracked.
+tools/*
+!tools/shadow_res.py
