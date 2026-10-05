@@ -2,8 +2,7 @@
 
 A single `.asi` plugin for the 2008 PC release of Mercenaries 2 that fixes the things
 about it that are bad on a modern PC: windowed/borderless play, mounted-weapon aiming,
-crouch aim lock, the car camera snap, controller prompts on a keyboard setup, and shadow
-map resolution.
+crouch aim lock, the car camera snap, and shadow map resolution.
 
 It patches the game's own code at addresses verified byte-by-byte against the shipped
 executable, so it needs no game files to be modified and nothing is written to disk.
@@ -27,7 +26,6 @@ log says a patch was skipped, it was skipped rather than guessed at.
 - **Car camera.** Its re-centre is slowed into a hold plus a blend instead of a snap.
 - **Aim assist.** The correction the game adds to your mouse yaw is removed, and a held
   lock-on key stops eating the frame's aim input.
-- **Keyboard prompts.** On-screen button prompts show keyboard glyphs.
 - **Shadows.** Atlas resolution (x4 in the shipped config) and cast distance.
 - **Settings panel.** Press **Insert** in game. Every row takes effect while you are
   standing in the world, and by default is written back to `Mercs2Fix.ini`.
